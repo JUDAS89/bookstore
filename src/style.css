@@ -1,0 +1,19 @@
+/* Aquí puedes agregar estilos adicionales que no sean globales */
+.navbar-brand {
+    font-weight: bold;
+  }
+  
+  .card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .footer {
+    padding: 10px;
+    background-color: #f8f9fa;
+  }
+  
