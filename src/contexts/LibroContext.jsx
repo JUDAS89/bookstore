@@ -1,5 +1,4 @@
 import React, { createContext, useState, useCallback } from 'react';
-import { getLibros } from '../services/api';
 
 const LibroContext = createContext();
 
@@ -8,7 +7,11 @@ export function LibroProvider({ children }) {
 
   const fetchLibros = useCallback(async () => {
     try {
-      const data = await getLibros();
+      const response = await fetch('/libros.json'); // Carga directamente desde libros.json en public
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
       setLibros(data);
     } catch (error) {
       console.error('Error al obtener los libros:', error);
@@ -23,3 +26,4 @@ export function LibroProvider({ children }) {
 }
 
 export default LibroContext;
+

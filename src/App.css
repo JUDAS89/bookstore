@@ -1,42 +1,101 @@
-#root {
-  max-width: 1280px;
+/* Reseteo básico para asegurar que todos los elementos tengan consistencia */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+/* Asegurar que el contenido ocupe todo el ancho de la pantalla */
+.container {
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+/* Estilo para las tarjetas de libros */
+.card {
+  margin: 1rem;
+  width: calc(33% - 2rem); /* Tres columnas con un pequeño margen */
+  min-width: 280px; /* Asegura un tamaño mínimo para pantallas pequeñas */
+}
+
+.card-img-top {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.card-body {
+  padding: 1rem;
+}
+
+/* Estilo para el header */
+header {
+  width: 100%;
+  padding: 1rem 0;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar .container-fluid {
+  justify-content: space-between;
+}
+
+/* Estilo para el footer */
+footer {
+  padding: 1rem 0;
+  background-color: #f8f9fa;
+  border-top: 1px solid #dee2e6;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Asegura que el footer esté al final de la página */
+html, body {
+  display: flex;
+  flex-direction: column;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+body {
+  flex: 1;
+}
+
+main {
+  flex: 1;
+}
+
+/* Estilo para la barra de navegación */
+.nav-link {
+  margin-right: 1rem;
+}
+
+.navbar-brand {
+  font-weight: bold;
+}
+
+/* Asegura que el contenido se vea bien en pantallas pequeñas */
+@media (max-width: 768px) {
+  .card {
+    width: calc(50% - 2rem); /* Dos columnas en pantallas pequeñas */
   }
-  to {
-    transform: rotate(360deg);
+}
+
+@media (max-width: 576px) {
+  .card {
+    width: calc(100% - 2rem); /* Una columna en pantallas muy pequeñas */
   }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
 }
