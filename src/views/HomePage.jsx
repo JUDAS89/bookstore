@@ -1,8 +1,9 @@
 import React, { useContext, useEffect } from 'react';
 import LibroCard from '../components/LibroCard';
 import LibroContext from '../contexts/LibroContext';
+import '../style.css'
 
-function HomePage() {
+const HomePage = () => {
   const { libros, fetchLibros } = useContext(LibroContext);
 
   useEffect(() => {
@@ -12,8 +13,8 @@ function HomePage() {
   return (
     <div className="container">
       <div className="row">
-        {libros.map(libro => (
-          <div key={libro.id} className="col-md-4">
+        {libros.map((libro, index) => (
+          <div key={libro.id||index} className="col-md-4">
             <LibroCard libro={libro} />
           </div>
         ))}
