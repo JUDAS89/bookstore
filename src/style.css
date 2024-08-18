@@ -99,7 +99,7 @@
 .card {
   perspective: 1000px;
   width: 300px;
-  height: 400px;
+  height: 500px;
   position: relative;
   transition: width 0.6s, height 0.6s, top 0.6s, left 0.6s;
   transform-style: preserve-3d;

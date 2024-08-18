@@ -21,13 +21,10 @@ function Navbar() {
         >
           <span className="navbar-toggler-icon"></span>
         </button>
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+        <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <ul className="navbar-nav">
             <li className="nav-item">
-              <Link className="nav-link" to="/catalogo">Catálogo 📚</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/carrito">Carrito 🛒</Link>
+              <Link className="nav-link" to="/register">Crear Cuenta</Link>
             </li>
             {user ? (
               <>
@@ -43,6 +40,9 @@ function Navbar() {
                 <Link className="nav-link" to="/login">Iniciar Sesión 🔓</Link>
               </li>
             )}
+           <li className="nav-item">
+              <Link className="nav-link" to="/carrito">Carrito 🛒</Link>
+            </li>
           </ul>
         </div>
       </div>
