@@ -1,14 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom'; // Usar solo Link en lugar de NavLink para consistencia
 import useAuth from '../hooks/useAuth';
+import '../style.css';
 
 function Navbar() {
   const { user, logout } = useAuth();
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+    <nav className="navbar navbar-expand-lg navbar-light bg-light navbar-full-width">
       <div className="container-fluid">
-        <Link className="navbar-brand" to="/">Bookstore</Link>
+        <Link className="navbar-brand" to="/">📖 Bookstore 📖</Link>
         <button 
           className="navbar-toggler" 
           type="button" 
@@ -23,23 +24,23 @@ function Navbar() {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <Link className="nav-link" to="/catalogo">Catálogo</Link>
+              <Link className="nav-link" to="/catalogo">Catálogo 📚</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/carrito">Carrito</Link>
+              <Link className="nav-link" to="/carrito">Carrito 🛒</Link>
             </li>
             {user ? (
               <>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/profile">Perfil</Link>
+                  <Link className="nav-link" to="/profile">Perfil 👤</Link>
                 </li>
                 <li className="nav-item">
-                  <button className="nav-link btn btn-link" onClick={logout}>Cerrar Sesión</button>
+                  <button className="nav-link btn btn-link" onClick={logout}>Cerrar Sesión 🔒</button>
                 </li>
               </>
             ) : (
               <li className="nav-item">
-                <Link className="nav-link" to="/login">Iniciar Sesión</Link>
+                <Link className="nav-link" to="/login">Iniciar Sesión 🔓</Link>
               </li>
             )}
           </ul>

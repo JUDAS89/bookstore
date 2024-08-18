@@ -1,24 +1,12 @@
-import React, { useContext, useEffect } from 'react';
-import LibroCard from '../components/LibroCard';
-import LibroContext from '../contexts/LibroContext';
+import React from 'react';
 import '../style.css'
 
 const HomePage = () => {
-  const { libros, fetchLibros } = useContext(LibroContext);
-
-  useEffect(() => {
-    fetchLibros();
-  }, [fetchLibros]);
-
   return (
-    <div className="container">
-      <div className="row">
-        {libros.map((libro, index) => (
-          <div key={libro.id||index} className="col-md-4">
-            <LibroCard libro={libro} />
-          </div>
-        ))}
-      </div>
+    <div className="presentation-container">
+      <img className='col-md-4' src="/img/libro1.jpg" alt="libro_top en ventas 1"/>
+      <img className='col-md-4' src="/img/oferta.png" alt="oferta del mes"/>
+      <img className='col-md-4' src="/img/libro2.jpg.webp" alt="libro_top en ventas 2"/>
     </div>
   );
 }

@@ -1,18 +1,183 @@
 /* Aquí puedes agregar estilos adicionales que no sean globales */
-.navbar-brand {
-  font-weight: bold;
-}
 
-.card {
+/*.card {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s;
 }
 
 .card:hover {
   transform: translateY(-5px);
+}*/
+
+.presentation-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
-.footer {
-  padding: 10px;
-  background-color: #f8f9fa;
+.presentation-img {
+  max-width: 33%;
+  height: auto;  
+  object-fit: cover;  /* Asegura que las imágenes mantengan su proporción */
+}
+
+@media (max-width: 768px) {
+  .presentation-container {
+    flex-direction: column; /* Las imágenes se apilan verticalmente en pantallas pequeñas */
+    justify-content: center;
+  }
+
+  .presentation-img {
+    max-width: 100%;
+    margin-bottom: 1rem; /* Espacio entre imágenes */
+  }
+}
+
+.navbar-full-width {
+  width: 100%;
+  height: 80px;
+  margin: 0;
+  left: 0;
+  right: 0;
+  position: fixed; /* Mantiene el navbar fijo en la parte superior */
+  top: 0;
+  z-index: 1000;   /* Mantiene el navbar por encima de otros elementos */
+  font-weight: bold;
+}
+
+.footer-full-width {
+  width: 100%;
+  position: fixed;
+  bottom: 0;  
+  left: 0;
+  text-align: center;
+  padding: 1rem 0;
+  z-index: 1000;
+  font-size: small;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  color: red;
+}
+
+.card-body p {
+  margin: 0;
+  padding: 0;
+}
+
+.card-body .precio {
+  color: blue; 
+  font-style: italic;
+  text-align: end;
+  font-size: small;
+}
+
+.card-body .autor {
+  font-style: italic;
+  text-align: end;
+  padding-bottom: 5px;
+}
+
+.card-title{
+  text-align: center;
+  font-weight: bold;
+  font-size: medium;
+}
+
+.card-text{
+  text-align: left;
+  font-size: small;
+}
+
+.card {
+  perspective: 1000px;
+  width: 300px;
+  height: 400px;
+  position: relative;
+  transition: width 0.6s, height 0.6s, top 0.6s, left 0.6s;
+  transform-style: preserve-3d;
+}
+
+.card.flipped {
+  width: 600px;
+  height: 600px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotateY(180deg); /* Centrado y rotación */
+  z-index: 1000;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.card.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 10px;
+  overflow-y: auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.card-front {
+  background-color: white;
+  z-index: 2; /* Asegura que esté por encima cuando no está volteado */
+}
+
+.card-back {
+  background-color: gainsboro;
+  transform: rotateY(180deg);
+  z-index: 1; /* Se muestra detrás hasta que se voltea */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+/* Ocultar el frente cuando está volteado */
+.card.flipped .card-front {
+  z-index: 1;
+}
+
+/* Mostrar la parte trasera cuando está volteado */
+.card.flipped .card-back {
+  z-index: 2;
+  display: flex;
+}
+
+/* Asegúrate de que el texto sea legible */
+.card-back .card-text {
+  margin-bottom: 1rem;
+}
+
+.card-body .precio {
+  color: blue; 
+  font-style: italic;
+  text-align: end;
+  font-size: large;
+}
+
+.card-title {
+  text-align: center;
+  font-weight: bold;
 }
