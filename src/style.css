@@ -181,3 +181,8 @@
   text-align: center;
   font-weight: bold;
 }
+
+.container{
+  margin: 0;
+  padding: 50px;
+}
