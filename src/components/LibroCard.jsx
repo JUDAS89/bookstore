@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types'; // validación de propiedades, buena práctica
+import PropTypes from 'prop-types';  // Validación de propiedades, buena practica.
 
-function LibroCard({ libro, isSelected, onCardClick }) {
+function LibroCard({ libro, onCardClick }) {
   const [isFlipped, setIsFlipped] = useState(false);
 
   // Función para alternar la rotación de la tarjeta
   const toggleFlip = () => {
-    if (!isFlipped) {
-      onCardClick(); // Informa al componente padre que esta tarjeta fue clickeada
-    }
     setIsFlipped(!isFlipped);
+    if (!isFlipped) {
+      onCardClick(libro.id); // Informa al componente padre que esta tarjeta fue clickeada
+    }
   };
 
   return (
     <div 
       className={`card ${isFlipped ? 'flipped' : ''}`} 
       onClick={toggleFlip} 
-      style={{ cursor: 'pointer', display: isSelected ? 'block' : 'none' }} // Mostrar/ocultar basado en la selección
+      style={{ cursor: 'pointer' }}
     >
       <div className="card-inner">
         {/* Contenido del frente de la tarjeta */}
@@ -43,6 +43,7 @@ function LibroCard({ libro, isSelected, onCardClick }) {
 
 LibroCard.propTypes = {
   libro: PropTypes.shape({
+    id: PropTypes.number.isRequired,
     img: PropTypes.string.isRequired,
     titulo: PropTypes.string.isRequired,
     desc: PropTypes.string.isRequired,
@@ -53,8 +54,8 @@ LibroCard.propTypes = {
     publicacion: PropTypes.string,
     pag: PropTypes.string,
   }).isRequired,
-  isSelected: PropTypes.bool.isRequired,
   onCardClick: PropTypes.func.isRequired,
 };
 
 export default LibroCard;
+

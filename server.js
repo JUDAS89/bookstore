@@ -3,11 +3,18 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import jwt from 'jsonwebtoken';
-import pool from './database/config.js'; // Importar la configuración de la base de datos
 import bcrypt from 'bcryptjs';
 import * as loggerExpress from 'logger-express';
 import { nanoid } from 'nanoid';
 import request from 'supertest';
+
+import { 
+  usuariosPool, 
+  categoriasPool, 
+  publicacionesPool, 
+  comprasPool, 
+  detallesComprasPool 
+} from './database/config.js';
 
 dotenv.config();
 

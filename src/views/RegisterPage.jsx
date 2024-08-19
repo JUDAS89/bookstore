@@ -1,27 +1,34 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 function RegisterPage() {
-  const [userData, setUserData] = useState({ username: '', email: '', password: '' });
+  const [userData, setUserData] = useState({ email: '', password: '' });
+  const [error, setError] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Aquí enviar los datos de registro a la API o al estado global
+    try {
+      const response = await axios.post('http://localhost:3000/api/users/register', {
+        email: userData.email,
+        password: userData.password,
+      });
+      console.log('Registro exitoso:', response.data);
+      setError(null); // Limpiar cualquier error previo
+      alert('Registro exitoso. Serás redirigido al inicio de sesión.');
+      setTimeout(() => {
+        window.location.href = '/login'; // Redirigir después de un breve retraso
+      }, 2000);
+    } catch (err) {
+      console.error('Error en el registro:', err);
+      setError('Error al registrarse. Intente nuevamente.');
+    }
   };
 
   return (
     <div className="container">
       <h1>Registro</h1>
+      {error && <div className="alert alert-danger">{error}</div>}
       <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label htmlFor="username" className="form-label">Usuario</label>
-          <input 
-            type="text" 
-            className="form-control" 
-            id="username" 
-            value={userData.username}
-            onChange={(e) => setUserData({ ...userData, username: e.target.value })}
-          />
-        </div>
         <div className="mb-3">
           <label htmlFor="email" className="form-label">Email</label>
           <input 
@@ -49,3 +56,4 @@ function RegisterPage() {
 }
 
 export default RegisterPage;
+
