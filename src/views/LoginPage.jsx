@@ -13,11 +13,11 @@ function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/users/login', credentials);
+      const response = await axios.post('http://localhost:3000/api/users/login', credentials);
       login(response.data.token, response.data.user);
       setSuccess('Inicio de sesión exitoso.');
       setError('');
-
+  
       // Redirigir al usuario a la página de perfil o inicio
       navigate('/profile');
     } catch (err) {
@@ -31,6 +31,7 @@ function LoginPage() {
       setSuccess('');
     }
   };
+  
 
   return (
     <div className="container">

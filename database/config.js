@@ -10,120 +10,95 @@ const { Pool } = pkg;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const executeQuery = async (client, query) => {
+const ensureDatabaseExists = async () => {
+  const pool = new Pool({
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: 'postgres', // Conéctate a la base de datos por defecto "postgres"
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
+  });
+
   try {
-    await client.query(query);
-    console.log(`Ejecutado con éxito: ${query}`);
+    const client = await pool.connect();
+    const dbCheckQuery = `SELECT 1 FROM pg_database WHERE datname = '${process.env.DB_NAME}'`;
+    const dbCheckResult = await client.query(dbCheckQuery);
+
+    if (dbCheckResult.rowCount === 0) {
+      await client.query(`CREATE DATABASE ${process.env.DB_NAME}`);
+      console.log(`Base de datos ${process.env.DB_NAME} creada correctamente`);
+    } else {
+      console.log(`Base de datos ${process.env.DB_NAME} ya existe`);
+    }
+
+    client.release();
   } catch (error) {
-    console.error(`Error ejecutando la query: ${query}`);
+    console.error('Error al verificar o crear la base de datos:', error);
+    throw error;
+  } finally {
+    await pool.end();
+  }
+};
+
+const executeQueryWithTransaction = async (client, queries) => {
+  try {
+    await client.query('BEGIN'); // Inicia la transacción
+    for (let query of queries) {
+      await client.query(query + ';');
+      console.log(`Ejecutado con éxito: ${query}`);
+    }
+    await client.query('COMMIT'); // Confirma la transacción si todo va bien
+    console.log('Transacción completada con éxito.');
+  } catch (error) {
+    await client.query('ROLLBACK'); // Deshace todos los cambios si ocurre un error
+    console.error('Error durante la transacción, todos los cambios se deshicieron:', error);
     throw error;
   }
 };
 
-const setupDatabase = async (user, host, database, password, port, initFile) => {
-  const initialPool = new Pool({
-    user,
-    host,
-    database: 'postgres',
-    password,
-    port,
+const setupDatabase = async () => {
+  await ensureDatabaseExists(); // Asegúrate de que la base de datos existe antes de configurar las tablas
+
+  const pool = new Pool({
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME, // Conéctate a la base de datos que acabas de crear
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
   });
 
   try {
-    const client = await initialPool.connect();
+    const client = await pool.connect();
 
-    const dbCheckQuery = `SELECT 1 FROM pg_database WHERE datname = '${database}'`;
-    const dbCheckResult = await client.query(dbCheckQuery);
+    const categoriasSql = fs.readFileSync(path.join(__dirname, 'init_categorias.sql')).toString();
+    const usuariosSql = fs.readFileSync(path.join(__dirname, 'init_usuarios.sql')).toString();
+    const publicacionesSql = fs.readFileSync(path.join(__dirname, 'init_publicaciones.sql')).toString();
+    const comprasSql = fs.readFileSync(path.join(__dirname, 'init_compras.sql')).toString();
+    const detallesComprasSql = fs.readFileSync(path.join(__dirname, 'init_detalles_compras.sql')).toString();
 
-    if (dbCheckResult.rowCount === 0) {
-      await client.query(`CREATE DATABASE ${database}`);
-      console.log(`Base de datos ${database} creada correctamente`);
-    } else {
-      console.log(`Base de datos ${database} ya existe`);
-    }
+    await executeQueryWithTransaction(client, [
+      categoriasSql,
+      usuariosSql,
+      publicacionesSql,
+      comprasSql,
+      detallesComprasSql,
+    ]);
 
     client.release();
+    console.log('Todas las tablas y datos iniciales fueron configurados correctamente.');
 
-    const specificDbPool = new Pool({
-      user,
-      host,
-      database,
-      password,
-      port,
-    });
-
-    const specificDbClient = await specificDbPool.connect();
-
-    const initSql = fs.readFileSync(path.join(__dirname, initFile)).toString();
-    const queries = initSql.split(';').filter(query => query.trim());
-
-    for (let query of queries) {
-      await executeQuery(specificDbClient, query + ';');
-    }
-
-    console.log(`Tablas y datos iniciales configurados correctamente en ${database}`);
-    specificDbClient.release();
-
-    return specificDbPool;
+    return pool; // Retorna el pool para que pueda ser usado en server.js
   } catch (error) {
-    console.error(`Error al configurar la base de datos ${database}:`, error);
-  } finally {
-    await initialPool.end();
+    console.error('Error al configurar las tablas:', error);
+    throw error; // Asegúrate de lanzar el error para manejarlo adecuadamente
   }
+  // No cierres el pool aquí, ya que lo necesitamos para consultas futuras
 };
 
-const categoriasPool = await setupDatabase(
-  process.env.DB_USER_CATEGORIAS,
-  process.env.DB_HOST_CATEGORIAS,
-  process.env.DB_NAME_CATEGORIAS,
-  process.env.DB_PASSWORD_CATEGORIAS,
-  process.env.DB_PORT_CATEGORIAS,
-  'init_categorias.sql'
-);
 
-const usuariosPool = await setupDatabase(
-  process.env.DB_USER_USUARIOS,
-  process.env.DB_HOST_USUARIOS,
-  process.env.DB_NAME_USUARIOS,
-  process.env.DB_PASSWORD_USUARIOS,
-  process.env.DB_PORT_USUARIOS,
-  'init_usuarios.sql'
-);
+export { setupDatabase };
 
-const publicacionesPool = await setupDatabase(
-  process.env.DB_USER_PUBLICACIONES,
-  process.env.DB_HOST_PUBLICACIONES,
-  process.env.DB_NAME_PUBLICACIONES,
-  process.env.DB_PASSWORD_PUBLICACIONES,
-  process.env.DB_PORT_PUBLICACIONES,
-  'init_publicaciones.sql'
-);
 
-const comprasPool = await setupDatabase(
-  process.env.DB_USER_COMPRAS,
-  process.env.DB_HOST_COMPRAS,
-  process.env.DB_NAME_COMPRAS,
-  process.env.DB_PASSWORD_COMPRAS,
-  process.env.DB_PORT_COMPRAS,
-  'init_compras.sql'
-);
-
-const detallesComprasPool = await setupDatabase(
-  process.env.DB_USER_DETALLES_COMPRAS,
-  process.env.DB_HOST_DETALLES_COMPRAS,
-  process.env.DB_NAME_DETALLES_COMPRAS,
-  process.env.DB_PASSWORD_DETALLES_COMPRAS,
-  process.env.DB_PORT_DETALLES_COMPRAS,
-  'init_detalles_compras.sql'
-);
-
-export {
-  usuariosPool,
-  categoriasPool,
-  publicacionesPool,
-  comprasPool,
-  detallesComprasPool,
-};
 
 
 
