@@ -42,7 +42,7 @@ const ensureDatabaseExists = async () => {
 
 const executeQueryWithTransaction = async (client, queries) => {
   try {
-    await client.query('BEGIN'); // Inicia la transacción
+    await client.query('BEGIN'); // Inicia la transacción, esto arroja vía terminal los comandos del sql
     for (let query of queries) {
       await client.query(query + ';');
       console.log(`Ejecutado con éxito: ${query}`);
@@ -90,9 +90,9 @@ const setupDatabase = async () => {
     return pool; // Retorna el pool para que pueda ser usado en server.js
   } catch (error) {
     console.error('Error al configurar las tablas:', error);
-    throw error; // Asegúrate de lanzar el error para manejarlo adecuadamente
+    throw error; 
   }
-  // No cierres el pool aquí, ya que lo necesitamos para consultas futuras
+  // No cierres el pool aquí, ya que lo necesitamos para consultas futuras 
 };
 
 
