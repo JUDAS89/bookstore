@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';  // Validación de propiedades, buena practica.
 
-function LibroCard({ libro, onCardClick }) {
+function LibroCard({ libro, onCardClick, onAddToCart  }) {
   const [isFlipped, setIsFlipped] = useState(false);
 
   // Función para alternar la rotación de la tarjeta
@@ -25,6 +25,17 @@ function LibroCard({ libro, onCardClick }) {
           <div className="card-body">
             <h5 className="card-title"> {libro.titulo} </h5>
             <p className="card-text precio"> <b>{libro.price} {libro.moneda}</b> </p>
+            <div className="d-flex justify-content-center mt-3">
+              <button 
+                className="btn btn-secondary" 
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  onAddToCart(libro);
+                }}
+              >
+                Agregar al Carrito
+              </button>
+            </div>
           </div>
         </div>
 
@@ -55,6 +66,7 @@ LibroCard.propTypes = {
     pag: PropTypes.string,
   }).isRequired,
   onCardClick: PropTypes.func.isRequired,
+  onAddToCart: PropTypes.func.isRequired,
 };
 
 export default LibroCard;

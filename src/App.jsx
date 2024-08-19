@@ -1,6 +1,7 @@
 import React from 'react';
 import { AuthProvider } from './contexts/AuthContext';
 import { LibroProvider } from './contexts/LibroContext';
+import { CartProvider } from './contexts/CartContext';
 import AppRouter from './AppRouter';
 import './App.css';
 
@@ -8,7 +9,9 @@ function App() {
   return (
     <AuthProvider>
       <LibroProvider>
-        <AppRouter />  {/* Mueve Navbar y Footer dentro de AppRouter */}
+        <CartProvider>
+          <AppRouter />  {/* Mueve Navbar y Footer dentro de AppRouter */}
+        </CartProvider>
       </LibroProvider>
     </AuthProvider>
   );

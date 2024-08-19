@@ -97,10 +97,3 @@ const setupDatabase = async () => {
 
 
 export { setupDatabase };
-
-
-
-
-
-
-
