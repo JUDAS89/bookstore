@@ -14,12 +14,14 @@ function LoginPage() {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:3000/api/users/login', credentials);
-      login(response.data.token, response.data.user);
+      const token = response.data.token;
+      const user = response.data.user;
+      console.log('Token recibido:', response.data.token); // Muestra el token en la consola
+      //login(response.data.token, response.data.user); // Aquí se almacena el token
+      login({ token, ...user });
       setSuccess('Inicio de sesión exitoso.');
-      setError('');
-  
-      // Redirigir al usuario a la página de perfil o inicio
-      navigate('/profile');
+      setError('');    
+      navigate('/profile'); // Redirigir al usuario a la página de perfil o inicio
     } catch (err) {
       if (err.response && err.response.status === 400) {
         setError('Credenciales incorrectas. Inténtalo de nuevo.');
@@ -31,7 +33,6 @@ function LoginPage() {
       setSuccess('');
     }
   };
-  
 
   return (
     <div className="container">
@@ -64,6 +65,7 @@ function LoginPage() {
     </div>
   );
 }
+
 
 export default LoginPage;
 

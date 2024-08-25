@@ -5,8 +5,9 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
-  const login = (userData) => {
-    setUser(userData);
+  const login = ({ token, ...userData }) => {
+    setUser({ token, ...userData });
+    console.log('Token guardado en el contexto:', token); // Para depuración
   };
 
   const logout = () => {

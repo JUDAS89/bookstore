@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function RegisterPage() {
   const [userData, setUserData] = useState({ email: '', password: '' });
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,8 +23,13 @@ function RegisterPage() {
     } catch (err) {
       // Manejar diferentes tipos de errores de respuesta del servidor
       if (err.response && err.response.status === 400) {
-      // Mostrar mensaje de error específico si es un error 400
-      setError(err.response.data.error || 'Error en la solicitud. Verifica los datos.');
+        // Mostrar mensaje de error específico si es un error 400
+        const errorMessage = err.response.data.error || 'Error en la solicitud. Verifica los datos.';
+        if (errorMessage === 'Error al registrarse. Correo ya existe') {
+          setError('Error al registrarse. Correo ya existe');
+        } else {
+          setError(errorMessage);
+        }
       } else {
         console.error('Error en el registro:', err);
         setError('Error al registrarse. Intente nuevamente.');
