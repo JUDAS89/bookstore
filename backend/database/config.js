@@ -1,14 +1,18 @@
-import pkg from 'pg';
+import pkg from 'pg'; // Asegúrate de importar pg
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-dotenv.config();
-const { Pool } = pkg;
-
+// Esta línea es para obtener __dirname en módulos ES
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Cargar el archivo .env desde la raíz del proyecto
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+
+// Asegúrate de extraer Pool del paquete pg
+const { Pool } = pkg;
 
 const ensureDatabaseExists = async () => {
   const pool = new Pool({
@@ -42,12 +46,12 @@ const ensureDatabaseExists = async () => {
 
 const executeQueryWithTransaction = async (client, queries) => {
   try {
-    await client.query('BEGIN'); // Inicia la transacción, esto arroja vía terminal los comandos del sql
+    await client.query('BEGIN'); // Inicia la transacción
     for (let query of queries) {
       await client.query(query + ';');
       console.log(`Ejecutado con éxito: ${query}`);
     }
-    await client.query('COMMIT'); // Confirma la transacción si todo va bien
+    await client.query('COMMIT'); // Confirma la transacción
     console.log('Transacción completada con éxito.');
   } catch (error) {
     await client.query('ROLLBACK'); // Deshace todos los cambios si ocurre un error
@@ -92,8 +96,6 @@ const setupDatabase = async () => {
     console.error('Error al configurar las tablas:', error);
     throw error; 
   }
-  // No cierres el pool aquí, ya que lo necesitamos para consultas futuras 
 };
-
 
 export { setupDatabase };

@@ -7,7 +7,9 @@ import bcrypt from 'bcryptjs';
 import * as loggerExpress from 'logger-express';
 import { nanoid } from 'nanoid';
 import request from 'supertest';
-import { setupDatabase } from './database/config.js'; 
+import { setupDatabase } from '../database/config.js'; 
+import { authenticateToken } from './middlewares.js';
+
 
 dotenv.config();
 
@@ -19,19 +21,6 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use(loggerExpress.logger());
 
-// Middleware para validar token JWT
-const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) return res.sendStatus(401);
-
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
-    next();
-  });
-};
 
 // Configurar la base de datos y luego iniciar el servidor
 setupDatabase().then(pool => {
