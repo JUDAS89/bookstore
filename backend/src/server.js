@@ -28,11 +28,11 @@ setupDatabase().then(pool => {
 
  // Ruta para registrar usuarios
 app.post('/api/users/register', async (req, res) => {
-  const { email, password } = req.body;
+  const { nombre, apellido, email, password } = req.body;
 
   // Validación de entrada
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Email y contraseña son requeridos' });
+  if (!nombre || !apellido || !email || !password) {
+    return res.status(400).json({ error: 'Todos los campos son requeridos' });
   }
 
   try {
@@ -50,8 +50,8 @@ app.post('/api/users/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     
     const result = await app.locals.db.query(
-      'INSERT INTO usuarios (correo, contraseña) VALUES ($1, $2) RETURNING *',
-      [email, hashedPassword]
+      'INSERT INTO usuarios (nombre, apellido, correo, contraseña) VALUES ($1, $2, $3, $4) RETURNING *',
+      [nombre, apellido, email, hashedPassword]
     );
 
     const user = result.rows[0];
