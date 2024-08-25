@@ -19,8 +19,14 @@ function RegisterPage() {
         window.location.href = '/login'; // Redirigir después de un breve retraso
       }, 2000);
     } catch (err) {
-      console.error('Error en el registro:', err);
-      setError('Error al registrarse. Intente nuevamente.');
+      // Manejar diferentes tipos de errores de respuesta del servidor
+      if (err.response && err.response.status === 400) {
+      // Mostrar mensaje de error específico si es un error 400
+      setError(err.response.data.error || 'Error en la solicitud. Verifica los datos.');
+      } else {
+        console.error('Error en el registro:', err);
+        setError('Error al registrarse. Intente nuevamente.');
+      }
     }
   };
 

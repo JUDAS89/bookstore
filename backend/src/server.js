@@ -21,7 +21,6 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use(loggerExpress.logger());
 
-
 // Configurar la base de datos y luego iniciar el servidor
 setupDatabase().then(pool => {
   
@@ -37,6 +36,17 @@ app.post('/api/users/register', async (req, res) => {
   }
 
   try {
+     // Verificar si el correo ya existe
+     console.log('Verificando si el correo ya existe en la base de datos...');
+     const emailCheck = await app.locals.db.query('SELECT * FROM usuarios WHERE correo = $1', [email]);
+     
+     if (emailCheck.rowCount > 0) {
+       // Si el correo ya existe, enviar un mensaje de error claro
+       console.log(`Email ya registrado: ${email}`);
+       return res.status(400).json({ error: 'Error al registrarse. Correo ya existe' });
+     }
+    
+    console.log('Email no encontrado, procediendo a registrar el usuario...');
     const hashedPassword = await bcrypt.hash(password, 10);
     
     const result = await app.locals.db.query(
@@ -47,9 +57,10 @@ app.post('/api/users/register', async (req, res) => {
     const user = result.rows[0];
     const token = jwt.sign({ id: user.id, email: user.correo }, process.env.JWT_SECRET);
     
+    console.log('Usuario registrado exitosamente:', user);
     res.json({ token, user });
   } catch (error) {
-    console.error('Error al registrar usuario:', error);
+    console.error('Error al registrar usuario:', error);  // Log detallado del error
     res.status(500).json({ error: 'Error al registrar usuario' });
   }
 });
@@ -154,4 +165,3 @@ app.post('/api/users/login', async (req, res) => {
 }).catch(error => {
   console.error('Error al configurar la base de datos:', error);
 });
-
