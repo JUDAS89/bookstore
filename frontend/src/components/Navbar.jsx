@@ -1,6 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom'; // Usar solo Link en lugar de NavLink para consistencia
+import { Link } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
+import CartIndicator from './CartIndicator'; 
 import '../style.css';
 
 function Navbar() {
@@ -40,8 +41,10 @@ function Navbar() {
                 <Link className="nav-link" to="/login">Iniciar Sesión 🔓</Link>
               </li>
             )}
-           <li className="nav-item">
-              <Link className="nav-link" to="/carrito">Carrito 🛒</Link>
+            <li className="nav-item">
+              <Link className="nav-link" to="/carrito">
+                <CartIndicator /> {/* Aquí se muestra el indicador del carrito */}
+              </Link>
             </li>
           </ul>
         </div>
@@ -51,3 +54,4 @@ function Navbar() {
 }
 
 export default Navbar;
+
