@@ -1,13 +1,12 @@
 import React from 'react';
 import useCart from '../hooks/useCart';
-import useAuth from '../hooks/useAuth'; // Importa el hook de autenticación
-import { useNavigate } from 'react-router-dom'; // Importa el hook de navegación
-
+import useAuth from '../hooks/useAuth'; 
+import { useNavigate } from 'react-router-dom'; 
 
 function CarritoPage() {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
-  const { user } = useAuth(); // Obtiene el estado de autenticación
-  const navigate = useNavigate(); // Hook para la navegación
+  const { user } = useAuth(); 
+  const navigate = useNavigate(); 
 
   // Calcular el total del carrito
   const totalCarrito = cart.reduce((total, item) => {
@@ -16,11 +15,13 @@ function CarritoPage() {
 
   const handleCheckout = () => {
     if (!user) {
-      // Si el usuario no ha iniciado sesión, redirigir a la página de inicio de sesión
-      navigate('/login');
+      // Guardar el carrito en localStorage antes de redirigir
+      localStorage.setItem('cart', JSON.stringify(cart));
+
+      // Redirigir al usuario a una página que le permita elegir entre iniciar sesión o registrarse
+      navigate('/auth-options');
       return;
     }
-    // Si el usuario ha iniciado sesión, continuar con la compra
     alert('Compra realizada con éxito!');
     clearCart();
   };
@@ -67,7 +68,7 @@ function CarritoPage() {
               </div>
             </div>
           ))}
-        <div className="cart-total-container d-flex justify-content-between align-items-center w-100 mt-2">
+          <div className="cart-total-container d-flex justify-content-between align-items-center w-100 mt-2">
             <h4 className="cart-total">Total del Carrito: {totalCarrito.toFixed(2)} CLP</h4>
             <button className="btn cart-checkout-btn" onClick={handleCheckout}>
               Realizar Compra

@@ -8,6 +8,7 @@ import RegisterPage from './views/RegisterPage';
 import CatalogoPage from './views/CatalogoPage';
 import Navbar from './components/Navbar';  // Importa Navbar
 import Footer from './components/Footer';  // Importa Footer
+import AuthOptionsPage from './views/AuthOptionsPage';
 
 function AppRouter() {
   return (
@@ -20,6 +21,7 @@ function AppRouter() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/catalogo" element={<CatalogoPage />} /> 
+        <Route path="/auth-options" element={<AuthOptionsPage />} /> 
       </Routes>
       <Footer />  {/* Renderiza Footer dentro del Router */}
     </Router>

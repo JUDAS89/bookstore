@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import useAuth from '../hooks/useAuth';
+import useCart from '../hooks/useCart'; // Importa el hook de carrito
 import { useNavigate } from 'react-router-dom';
 
 function LoginPage() {
   const { login } = useAuth();
+  const { addToCart } = useCart(); // Desestructuramos la función para agregar al carrito
   const navigate = useNavigate(); 
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
@@ -13,16 +15,27 @@ function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Solicitud al backend para iniciar sesión
       const response = await axios.post('http://localhost:3000/api/users/login', credentials);
       const token = response.data.token;
       const user = response.data.user;
-      console.log('Token recibido:', response.data.token); // Muestra el token en la consola
-      //login(response.data.token, response.data.user); // Aquí se almacena el token
+
+      // Guardar el usuario en el contexto global de autenticación
       login({ token, ...user });
+
+      // Cargar el carrito desde localStorage, si existe
+      const storedCart = JSON.parse(localStorage.getItem('cart'));
+      if (storedCart) {
+        // Agregar cada ítem del carrito almacenado al carrito actual
+        storedCart.forEach(item => addToCart(item));
+        localStorage.removeItem('cart'); // Limpiar localStorage después de cargar el carrito
+      }
+
       setSuccess('Inicio de sesión exitoso.');
       setError('');    
-      navigate('/carrito'); // Redirigir al usuario a la página de perfil o inicio
+      navigate('/carrito'); // Redirigir al usuario al carrito para continuar con la compra
     } catch (err) {
+      // Manejo de errores basado en la respuesta del servidor
       if (err.response && err.response.status === 400) {
         setError('Credenciales incorrectas. Inténtalo de nuevo.');
       } else if (err.response && err.response.status === 404) {
@@ -66,6 +79,4 @@ function LoginPage() {
   );
 }
 
-
 export default LoginPage;
-
