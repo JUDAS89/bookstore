@@ -19,11 +19,14 @@ function ProfilePage() {
 
       try {
         console.log('Token usado para la solicitud de perfil:', user.token); // Verifica que el token sea el esperado
-        const response = await axios.get('http://localhost:3000/api/users/profile', {
+        // Añadimos un parámetro para evitar el almacenamiento en caché en el frontend
+        const response = await axios.get(`http://localhost:3000/api/users/profile?nocache=${new Date().getTime()}`, {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
         });
+
+        console.log('Datos del perfil recibidos en el frontend:', response.data.user); // Log para depuración
         setProfile(response.data.user);
       } catch (error) {
         console.error('Error al obtener el perfil:', error);
@@ -46,7 +49,9 @@ function ProfilePage() {
       <h1>Perfil del Usuario</h1>
       {profile ? (
         <>
-          <p>Email: {profile.correo}</p>
+          <p>Nombre: {profile.nombre}</p> {/* Asegúrate de mostrar el nombre */}
+          <p>Apellido: {profile.apellido}</p> {/* Asegúrate de mostrar el apellido */}
+          <p>Email: {profile.correo}</p> 
           <button onClick={logout} className="btn btn-secondary">Cerrar Sesión</button>
         </>
       ) : (

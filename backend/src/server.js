@@ -47,11 +47,15 @@ app.post('/api/users/register', async (req, res) => {
      }
     
     console.log('Email no encontrado, procediendo a registrar el usuario...');
+     // Encriptar la contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
     
-    const result = await app.locals.db.query(
-      'INSERT INTO usuarios (nombre, apellido, correo, contraseña) VALUES ($1, $2, $3, $4) RETURNING *',
-      [nombre, apellido, email, hashedPassword]
+     // Inserción en la base de datos
+     console.log('Datos recibidos para registrar:', { nombre, apellido, email, password });
+     const result = await app.locals.db.query(
+      `INSERT INTO usuarios (nombre, apellido, correo, contraseña) 
+       VALUES ($1, $2, $3, $4) RETURNING id, nombre, apellido, correo`,
+       [nombre || '', apellido || '', email, hashedPassword]
     );
 
     const user = result.rows[0];
@@ -93,10 +97,29 @@ app.post('/api/users/login', async (req, res) => {
   // Ruta para obtener el perfil del usuario
   app.get('/api/users/profile', authenticateToken, async (req, res) => {
     const userId = req.user.id;
+  
+    try {
+       // Modificamos la consulta SQL para seleccionar nombre, apellido y correo
+      const result = await app.locals.db.query(
+        'SELECT id, nombre, apellido, correo FROM usuarios WHERE id = $1', 
+        [userId]
+      );
+      
+      if (result.rowCount === 0) {
+        return res.status(404).json({ error: 'Usuario no encontrado' });
+      }
 
-    const result = await app.locals.db.query('SELECT id, correo FROM usuarios WHERE id = $1', [userId]);
-    
-    res.json({ user: result.rows[0] });
+      // Añadimos encabezados para evitar el almacenamiento en caché de la respuesta
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+
+      console.log('Datos del usuario obtenidos:', result.rows[0]); // Log para depuración
+      res.json({ user: result.rows[0] });
+    } catch (error) {
+      console.error('Error al obtener el perfil:', error);
+      res.status(500).json({ error: 'Error al obtener el perfil del usuario' });
+    }
   });
 
   // Ruta para crear publicaciones
@@ -165,3 +188,4 @@ app.post('/api/users/login', async (req, res) => {
 }).catch(error => {
   console.error('Error al configurar la base de datos:', error);
 });
+
