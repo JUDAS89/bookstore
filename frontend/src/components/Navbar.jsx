@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import CartIndicator from './CartIndicator'; 
@@ -6,26 +6,30 @@ import '../style.css';
 
 function Navbar() {
   const { user, logout } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+    console.log("Menu toggled, menuOpen is now:", !menuOpen);  // Debugging
+  };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light navbar-full-width">
+    <nav className="navbar navbar-light bg-light navbar-full-width">
       <div className="container-fluid">
         <Link className="navbar-brand" to="/">📖 Bookstore 📖</Link>
         <button 
-          className="navbar-toggler" 
+          className="navbar-toggler d-block d-lg-none"  // Solo visible en dispositivos pequeños
           type="button" 
-          data-bs-toggle="collapse" 
-          data-bs-target="#navbarNav" 
-          aria-controls="navbarNav" 
-          aria-expanded="false" 
+          aria-expanded={menuOpen}
           aria-label="Toggle navigation"
+          onClick={toggleMenu}
         >
-          <span className="navbar-toggler-icon"></span>
+          ☰ {/* Ícono de hamburguesa */}
         </button>
-        <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <div className={`navbar-collapse justify-content-end ${menuOpen ? 'show' : ''}`}>
           <ul className="navbar-nav">
             <li className="nav-item">
-              <Link className="nav-link" to="/register">Crear Cuenta </Link>
+              <Link className="nav-link" to="/register">Crear Cuenta</Link>
             </li>
             {user ? (
               <>
@@ -43,7 +47,7 @@ function Navbar() {
             )}
             <li className="nav-item">
               <Link className="nav-link" to="/carrito">
-                <CartIndicator /> {/* Aquí se muestra el indicador del carrito */}
+                <CartIndicator />
               </Link>
             </li>
           </ul>
@@ -54,4 +58,6 @@ function Navbar() {
 }
 
 export default Navbar;
+
+
 

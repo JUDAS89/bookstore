@@ -39,16 +39,93 @@
   }
 }
 
+/* Estilos generales del navbar */
 .navbar-full-width {
   width: 100%;
   height: 80px;
   margin: 0;
   left: 0;
   right: 0;
-  position: fixed; /* Mantiene el navbar fijo en la parte superior */
+  position: fixed;
   top: 0;
-  z-index: 1000;   /* Mantiene el navbar por encima de otros elementos */
+  z-index: 1000;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+}
+
+.navbar-collapse {
+  display: none;
+  flex-basis: 100%;
+  flex-grow: 1;
+  align-items: center;
+}
+
+.navbar-collapse.show {
+  display: flex;
+}
+
+.navbar-toggler {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  display: block;
+}
+
+/* Estilos específicos para pantallas grandes */
+@media (min-width: 992px) {
+  .navbar-toggler {
+    display: none;  /* Oculta el botón de hamburguesa en pantallas grandes */
+  }
+
+  .navbar-collapse {
+    display: flex !important; /* Asegura que el menú se muestre en pantallas grandes */
+    justify-content: flex-end; /* Alinea los ítems del navbar a la derecha */
+  }
+
+  .navbar-nav {
+    flex-direction: row; /* Asegura que los elementos del navbar estén en línea */
+  }
+
+  .nav-item {
+    margin-left: 15px; /* Añade espacio entre los elementos del navbar */
+  }
+
+  .navbar-brand {
+    margin-right: auto; /* Deja espacio entre el logo y los elementos de la derecha */
+  }
+}
+
+/* Estilos específicos para pantallas pequeñas */
+@media (max-width: 991px) {
+  .navbar-collapse {
+    display: none; /* Oculta el menú por defecto en pantallas pequeñas */
+    flex-direction: column;
+  }
+  
+  .navbar-collapse.show {
+    display: flex; /* Muestra el menú cuando está activo en pantallas pequeñas */
+    flex-direction: column; /* Alinea los ítems del navbar en columna */
+    background-color: #f8f9fa; /* Color de fondo del navbar */
+    position: absolute;
+    top: 80px;
+    width: 100%;
+    left: 0;
+    padding: 10px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .navbar-nav {
+    flex-direction: column; /* Los elementos del navbar estarán en columna en pantallas pequeñas */
+  }
+
+  .nav-item {
+    margin-left: 0; /* Resetea el margen en pantallas pequeñas */
+    margin-top: 10px; /* Añade espacio entre los elementos del navbar en pantallas pequeñas */
+  }
 }
 
 .footer-full-width {
@@ -269,3 +346,4 @@
   background-color: #218838;
   border-color: #1e7e34;
 }
+
