@@ -1,8 +1,13 @@
 import React from 'react';
 import useCart from '../hooks/useCart';
+import useAuth from '../hooks/useAuth'; // Importa el hook de autenticación
+import { useNavigate } from 'react-router-dom'; // Importa el hook de navegación
+
 
 function CarritoPage() {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
+  const { user } = useAuth(); // Obtiene el estado de autenticación
+  const navigate = useNavigate(); // Hook para la navegación
 
   // Calcular el total del carrito
   const totalCarrito = cart.reduce((total, item) => {
@@ -10,6 +15,12 @@ function CarritoPage() {
   }, 0);
 
   const handleCheckout = () => {
+    if (!user) {
+      // Si el usuario no ha iniciado sesión, redirigir a la página de inicio de sesión
+      navigate('/login');
+      return;
+    }
+    // Si el usuario ha iniciado sesión, continuar con la compra
     alert('Compra realizada con éxito!');
     clearCart();
   };

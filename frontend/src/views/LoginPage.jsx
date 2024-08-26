@@ -21,7 +21,7 @@ function LoginPage() {
       login({ token, ...user });
       setSuccess('Inicio de sesión exitoso.');
       setError('');    
-      navigate('/profile'); // Redirigir al usuario a la página de perfil o inicio
+      navigate('/carrito'); // Redirigir al usuario a la página de perfil o inicio
     } catch (err) {
       if (err.response && err.response.status === 400) {
         setError('Credenciales incorrectas. Inténtalo de nuevo.');
