@@ -42,3 +42,4 @@ function CatalogoPage() {
 }
 
 export default CatalogoPage;
+

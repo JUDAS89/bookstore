@@ -1,9 +1,20 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
+
+  // Cargar carrito desde localStorage al iniciar la aplicación
+  useEffect(() => {
+    const savedCart = JSON.parse(localStorage.getItem('cart')) || [];
+    setCart(savedCart);
+  }, []);
+
+  // Guardar el carrito en localStorage cada vez que cambie
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
 
   const addToCart = (libro) => {
     setCart(prevCart => {
@@ -11,7 +22,7 @@ export function CartProvider({ children }) {
       if (existingBook) {
         return prevCart.map(item => 
           item.id === libro.id 
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: existingBook.quantity + 1 }
             : item
         );
       } else {
@@ -44,3 +55,7 @@ export function CartProvider({ children }) {
 }
 
 export default CartContext;
+
+
+
+
