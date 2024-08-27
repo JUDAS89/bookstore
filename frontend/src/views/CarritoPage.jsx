@@ -2,6 +2,7 @@ import React from 'react';
 import useCart from '../hooks/useCart';
 import useAuth from '../hooks/useAuth'; 
 import { useNavigate } from 'react-router-dom'; 
+import axios from 'axios';
 
 function CarritoPage() {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
@@ -13,7 +14,7 @@ function CarritoPage() {
     return total + item.price * item.quantity;
   }, 0);
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (!user) {
       // Guardar el carrito en localStorage antes de redirigir
       localStorage.setItem('cart', JSON.stringify(cart));
@@ -22,8 +23,30 @@ function CarritoPage() {
       navigate('/auth-options');
       return;
     }
-    alert('Compra realizada con éxito!');
-    clearCart();
+
+    try {
+      // Crear la compra en el backend
+      const response = await axios.post('http://localhost:3000/api/compras', {
+        usuario_id: user.id,
+        items: cart.map(item => ({
+          publicacion_id: item.id,
+          cantidad: item.quantity
+        }))
+      }, {
+        headers: {
+          Authorization: `Bearer ${user.token}`
+        }
+      });
+
+      if (response.status === 200) {
+        alert('Compra realizada con éxito!');
+        clearCart(); // Limpiar el carrito después de la compra exitosa
+        navigate('/'); // Redirigir a la página principal o a una página de confirmación
+      }
+    } catch (error) {
+      console.error('Error al realizar la compra:', error);
+      alert('Hubo un problema al procesar la compra. Por favor, intenta nuevamente.');
+    }
   };
 
   return (
@@ -81,4 +104,5 @@ function CarritoPage() {
 }
 
 export default CarritoPage;
+
 

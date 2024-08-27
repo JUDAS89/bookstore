@@ -159,10 +159,12 @@ app.post('/api/users/login', async (req, res) => {
     res.json({ categories: result.rows });
   });
 
-  // Ruta para gestionar compras (ejemplo)
-  app.post('/api/compras', authenticateToken, async (req, res) => {
-    const { usuario_id, items } = req.body;
+  // Ruta para gestionar compras
+app.post('/api/compras', authenticateToken, async (req, res) => {
+  const { usuario_id, items } = req.body;
 
+  try {
+    // Insertar la compra en la tabla compras
     const compraResult = await app.locals.db.query(
       'INSERT INTO compras (usuario_id) VALUES ($1) RETURNING *',
       [usuario_id]
@@ -171,14 +173,25 @@ app.post('/api/users/login', async (req, res) => {
     const compra = compraResult.rows[0];
 
     for (const item of items) {
+      // Insertar cada ítem en la tabla detalle_compras
       await app.locals.db.query(
         'INSERT INTO detalle_compras (compra_id, publicacion_id, cantidad) VALUES ($1, $2, $3)',
         [compra.id, item.publicacion_id, item.cantidad]
       );
+
+      // Actualizar la cantidad de ventas en la tabla publicaciones
+      await app.locals.db.query(
+        'UPDATE publicaciones SET ventas = ventas + $1 WHERE id = $2',
+        [item.cantidad, item.publicacion_id]
+      );
     }
 
     res.json({ compra });
-  });
+  } catch (error) {
+    console.error('Error al realizar la compra:', error);
+    res.status(500).json({ error: 'Error al procesar la compra.' });
+  }
+});
 
   // Iniciar el servidor después de configurar la base de datos
   app.listen(port, () => {

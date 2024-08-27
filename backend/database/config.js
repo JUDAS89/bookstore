@@ -1,17 +1,15 @@
-import pkg from 'pg'; // Asegúrate de importar pg
+import pkg from 'pg';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Esta línea es para obtener __dirname en módulos ES
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Cargar el archivo .env desde la raíz del proyecto
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
-// Asegúrate de extraer Pool del paquete pg
 const { Pool } = pkg;
 
 const ensureDatabaseExists = async () => {
@@ -60,6 +58,37 @@ const executeQueryWithTransaction = async (client, queries) => {
   }
 };
 
+const insertLibrosFromJSON = async (client) => {
+  const libros = JSON.parse(fs.readFileSync(path.join(__dirname, '../../frontend/public/libros.json'), 'utf8'));
+
+  for (const libro of libros) {
+    const categoriaResult = await client.query('SELECT id FROM categorias WHERE nombre = $1', [libro.categoria]);
+    let categoria_id;
+
+    if (categoriaResult.rowCount === 0) {
+      const newCategoriaResult = await client.query(
+        'INSERT INTO categorias (nombre) VALUES ($1) RETURNING id',
+        [libro.categoria]
+      );
+      categoria_id = newCategoriaResult.rows[0].id;
+    } else {
+      categoria_id = categoriaResult.rows[0].id;
+    }
+
+    const libroResult = await client.query('SELECT id FROM publicaciones WHERE id = $1', [libro.id]);
+
+    if (libroResult.rowCount === 0) {
+      await client.query(
+        'INSERT INTO publicaciones (id, titulo, precio, categoria_id, ventas) VALUES ($1, $2, $3, $4, $5)',
+        [libro.id, libro.titulo, libro.price, categoria_id, 0]
+      );
+      console.log(`Libro "${libro.titulo}" insertado correctamente.`);
+    } else {
+      console.log(`Libro "${libro.titulo}" ya existe en la base de datos.`);
+    }
+  }
+};
+
 const setupDatabase = async () => {
   await ensureDatabaseExists(); // Asegúrate de que la base de datos existe antes de configurar las tablas
 
@@ -88,6 +117,9 @@ const setupDatabase = async () => {
       detallesComprasSql,
     ]);
 
+    // Insertar datos desde libros.json
+    await insertLibrosFromJSON(client);
+
     client.release();
     console.log('Todas las tablas y datos iniciales fueron configurados correctamente.');
 
@@ -99,3 +131,4 @@ const setupDatabase = async () => {
 };
 
 export { setupDatabase };
+

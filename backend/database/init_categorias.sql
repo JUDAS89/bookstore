@@ -1,10 +1,17 @@
 CREATE TABLE IF NOT EXISTS categorias (
   id SERIAL PRIMARY KEY,
-  nombre VARCHAR(100)
+  nombre VARCHAR(100) UNIQUE
 );
 
--- Insertar categorías predefinidas
+-- Insertar categorías basadas en libros.json
 INSERT INTO categorias (nombre) VALUES 
-('Category 1'),
-('Category 2'),
-('Category 3');
+('Literatura y ficción'),
+('Biografías y Memorias'),
+('Misterio, Thriller y Suspenso'),
+('Ficción Literaria'),
+('Ficción de Acción y Aventura'),
+('Acción y Aventura Clásica'),
+('Ficción Erótica'),
+('Mitología y Cuentos Populares'),
+('Biografías de Presidentes y Jefes de Estado'),
+('Thriller Psicológicos');
