@@ -116,7 +116,7 @@ const setupDatabase = async () => {
       publicacionesSql,
       comprasSql,
       detallesComprasSql,
-      ratingsSql,  // Agrega esto
+      ratingsSql,  
     ]);
 
     await insertLibrosFromJSON(client);

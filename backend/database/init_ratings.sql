@@ -5,3 +5,4 @@ CREATE TABLE IF NOT EXISTS ratings (
     rating DECIMAL(2, 1) CHECK (rating >= 0 AND rating <= 5)
 );
 
+

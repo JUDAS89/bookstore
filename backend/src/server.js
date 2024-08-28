@@ -199,12 +199,28 @@ app.get('/api/users/compras', authenticateToken, async (req, res) => {
 
   try {
     const result = await app.locals.db.query(
-      `SELECT p.titulo, p.precio, p.ventas, c.nombre AS categoria, dc.cantidad, co.fecha 
-       FROM detalle_compras dc 
-       JOIN publicaciones p ON dc.publicacion_id = p.id 
-       JOIN compras co ON dc.compra_id = co.id 
-       JOIN categorias c ON p.categoria_id = c.id 
-       WHERE co.usuario_id = $1`,
+      `SELECT 
+          co.id AS compra_id,  
+          p.id AS publicacion_id,  
+          p.titulo, 
+          p.precio, 
+          p.ventas, 
+          c.nombre AS categoria, 
+          dc.cantidad, 
+          co.fecha, 
+          r.rating AS userRating  -- Obtenemos el rating si existe
+       FROM 
+          detalle_compras dc 
+       JOIN 
+          publicaciones p ON dc.publicacion_id = p.id 
+       JOIN 
+          compras co ON dc.compra_id = co.id 
+       JOIN 
+          categorias c ON p.categoria_id = c.id 
+       LEFT JOIN 
+          ratings r ON r.publicacion_id = p.id AND r.usuario_id = $1  -- Verificamos si el usuario ha votado
+       WHERE 
+          co.usuario_id = $1`,
       [userId]
     );
 
@@ -214,6 +230,7 @@ app.get('/api/users/compras', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Error al obtener las compras del usuario' });
   }
 });
+
 
 // Ruta para enviar un rating
 app.post('/api/ratings', authenticateToken, async (req, res) => {
@@ -243,10 +260,12 @@ app.post('/api/ratings', authenticateToken, async (req, res) => {
 
     res.json({ message: 'Rating guardado correctamente.' });
   } catch (error) {
-    console.error('Error al guardar el rating:', error);
-    res.status(500).json({ error: 'Error al guardar el rating.' });
+    console.error('Error al guardar el rating:', error.message || error);
+    res.status(500).json({ error: 'Error al guardar el rating. Por favor, inténtalo nuevamente.' });
   }
 });
+
+
 
 
   // Iniciar el servidor después de configurar la base de datos

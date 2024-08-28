@@ -70,6 +70,13 @@ function ProfilePage() {
       await axios.post('http://localhost:3000/api/ratings', { publicacion_id, rating }, {
         headers: { Authorization: `Bearer ${user.token}` }
       });
+  
+      setCompras(prevCompras =>
+        prevCompras.map(compra =>
+          compra.publicacion_id === publicacion_id ? { ...compra, userRating: rating } : compra
+        )
+      );
+  
       alert('Rating guardado exitosamente');
     } catch (error) {
       console.error('Error al guardar el rating:', error);
@@ -97,16 +104,24 @@ function ProfilePage() {
                     className="libro-imagen" 
                   />
                   <div className="compra-detalles">
+                    <input type="hidden" value={compra.compra_id} />
+                    <input type="hidden" value={compra.publicacion_id} />
                     <p className="compra-titulo">{compra.titulo}</p>
                     <p className="compra-info">Cantidad: {compra.cantidad}</p>
                     <p className="compra-info">Fecha: {new Date(compra.fecha).toLocaleDateString()}</p>
                     <div className="compra-rating">
                       <p className="mb-0">¿Te gustó el libro?</p>
-                      <Rating
-                        initialRating={compra.userRating || 0}
-                        fractions={2}
-                        onChange={(value) => handleRatingChange(compra.publicacion_id, value)}
-                      />
+                      {compra.userRating ? (
+                        // Mostrar solo el rating si el usuario ya votó
+                        <p className="compra-info">Tu rating: {compra.userRating}</p>
+                      ) : (
+                        // Mostrar el componente de rating si el usuario no ha votado
+                        <Rating
+                          initialRating={0}
+                          fractions={2}
+                          onChange={(value) => handleRatingChange(compra.publicacion_id, value)}
+                        />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -122,6 +137,7 @@ function ProfilePage() {
     </div>
   );
 }
+
 
 // CSS en línea o en un archivo CSS separado
 const styles = `
