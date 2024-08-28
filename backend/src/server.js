@@ -193,6 +193,62 @@ app.post('/api/compras', authenticateToken, async (req, res) => {
   }
 });
 
+// Ruta para obtener las compras del usuario
+app.get('/api/users/compras', authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    const result = await app.locals.db.query(
+      `SELECT p.titulo, p.precio, p.ventas, c.nombre AS categoria, dc.cantidad, co.fecha 
+       FROM detalle_compras dc 
+       JOIN publicaciones p ON dc.publicacion_id = p.id 
+       JOIN compras co ON dc.compra_id = co.id 
+       JOIN categorias c ON p.categoria_id = c.id 
+       WHERE co.usuario_id = $1`,
+      [userId]
+    );
+
+    res.json({ compras: result.rows });
+  } catch (error) {
+    console.error('Error al obtener las compras del usuario:', error);
+    res.status(500).json({ error: 'Error al obtener las compras del usuario' });
+  }
+});
+
+// Ruta para enviar un rating
+app.post('/api/ratings', authenticateToken, async (req, res) => {
+  const { publicacion_id, rating } = req.body;
+  const usuario_id = req.user.id;
+
+  try {
+    // Verificar si el usuario ya ha calificado este libro
+    const existingRating = await app.locals.db.query(
+      'SELECT * FROM ratings WHERE usuario_id = $1 AND publicacion_id = $2',
+      [usuario_id, publicacion_id]
+    );
+
+    if (existingRating.rowCount > 0) {
+      // Si ya existe, actualizar el rating
+      await app.locals.db.query(
+        'UPDATE ratings SET rating = $1 WHERE usuario_id = $2 AND publicacion_id = $3',
+        [rating, usuario_id, publicacion_id]
+      );
+    } else {
+      // Si no existe, insertar el nuevo rating
+      await app.locals.db.query(
+        'INSERT INTO ratings (usuario_id, publicacion_id, rating) VALUES ($1, $2, $3)',
+        [usuario_id, publicacion_id, rating]
+      );
+    }
+
+    res.json({ message: 'Rating guardado correctamente.' });
+  } catch (error) {
+    console.error('Error al guardar el rating:', error);
+    res.status(500).json({ error: 'Error al guardar el rating.' });
+  }
+});
+
+
   // Iniciar el servidor después de configurar la base de datos
   app.listen(port, () => {
     console.log(`Servidor corriendo en http://localhost:${port}`);

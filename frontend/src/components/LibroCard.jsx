@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';  // Validación de propiedades, buena practica.
+import axios from 'axios'; // Para hacer solicitudes al backend
 
-function LibroCard({ libro, onCardClick, onAddToCart  }) {
+function LibroCard({ libro, onCardClick, onAddToCart }) {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [averageRating, setAverageRating] = useState(null); // Nuevo estado para almacenar el rating promedio
 
   // Función para alternar la rotación de la tarjeta
   const toggleFlip = () => {
@@ -10,6 +12,37 @@ function LibroCard({ libro, onCardClick, onAddToCart  }) {
     if (!isFlipped) {
       onCardClick(libro.id); // Informa al componente padre que esta tarjeta fue clickeada
     }
+  };
+
+  // Obtener el rating promedio del libro
+  useEffect(() => {
+    const fetchAverageRating = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/api/ratings/${libro.id}`);
+        setAverageRating(response.data.averageRating);
+      } catch (error) {
+        console.error('Error al obtener el rating promedio:', error);
+      }
+    };
+
+    fetchAverageRating();
+  }, [libro.id]);
+
+  // Función para renderizar estrellas según el rating promedio
+  const renderStars = (rating) => {
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 !== 0;
+    const stars = [];
+
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(<span key={i} className="fa fa-star checked"></span>);
+    }
+
+    if (halfStar) {
+      stars.push(<span key="half" className="fa fa-star-half-o checked"></span>);
+    }
+
+    return stars;
   };
 
   return (
@@ -25,6 +58,12 @@ function LibroCard({ libro, onCardClick, onAddToCart  }) {
           <div className="card-body">
             <h5 className="card-title"> {libro.titulo} </h5>
             <p className="card-text precio"> <b>{libro.price} {libro.moneda}</b> </p>
+            {averageRating !== null && (
+              <div className="rating">
+                {renderStars(averageRating)}
+                <span className="ml-2">{averageRating.toFixed(1)}</span>
+              </div>
+            )}
             <div className="d-flex justify-content-center mt-3">
               <button 
                 className="btn btn-secondary" 
@@ -70,5 +109,6 @@ LibroCard.propTypes = {
 };
 
 export default LibroCard;
+
 
 

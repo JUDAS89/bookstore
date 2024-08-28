@@ -108,6 +108,7 @@ const setupDatabase = async () => {
     const publicacionesSql = fs.readFileSync(path.join(__dirname, 'init_publicaciones.sql')).toString();
     const comprasSql = fs.readFileSync(path.join(__dirname, 'init_compras.sql')).toString();
     const detallesComprasSql = fs.readFileSync(path.join(__dirname, 'init_detalles_compras.sql')).toString();
+    const ratingsSql = fs.readFileSync(path.join(__dirname, 'init_ratings.sql')).toString(); 
 
     await executeQueryWithTransaction(client, [
       categoriasSql,
@@ -115,6 +116,7 @@ const setupDatabase = async () => {
       publicacionesSql,
       comprasSql,
       detallesComprasSql,
+      ratingsSql,  // Agrega esto
     ]);
 
     await insertLibrosFromJSON(client);
@@ -130,3 +132,4 @@ const setupDatabase = async () => {
 };
 
 export { setupDatabase };
+
