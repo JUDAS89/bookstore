@@ -111,16 +111,18 @@ function ProfilePage() {
                     <p className="compra-info">Fecha: {new Date(compra.fecha).toLocaleDateString()}</p>
                     <div className="compra-rating">
                       <p className="mb-0">¿Te gustó el libro?</p>
-                      {compra.userRating ? (
-                        // Mostrar solo el rating si el usuario ya votó
-                        <p className="compra-info">Tu rating: {compra.userRating}</p>
+                      {compra.userRating !== null && compra.userRating !== undefined ? (
+                        <>
+                          <p className="compra-info">Tu rating: {compra.userRating}</p>
+                        </>
                       ) : (
-                        // Mostrar el componente de rating si el usuario no ha votado
-                        <Rating
-                          initialRating={0}
-                          fractions={2}
-                          onChange={(value) => handleRatingChange(compra.publicacion_id, value)}
-                        />
+                        <>
+                          <Rating
+                            initialRating={0}
+                            fractions={2}
+                            onChange={(value) => handleRatingChange(compra.publicacion_id, value)}
+                          />
+                        </>
                       )}
                     </div>
                   </div>
@@ -137,7 +139,6 @@ function ProfilePage() {
     </div>
   );
 }
-
 
 // CSS en línea o en un archivo CSS separado
 const styles = `

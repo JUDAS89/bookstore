@@ -208,7 +208,7 @@ app.get('/api/users/compras', authenticateToken, async (req, res) => {
           c.nombre AS categoria, 
           dc.cantidad, 
           co.fecha, 
-          r.rating AS userRating  -- Obtenemos el rating si existe
+          r.rating AS userRating  
        FROM 
           detalle_compras dc 
        JOIN 
@@ -218,18 +218,20 @@ app.get('/api/users/compras', authenticateToken, async (req, res) => {
        JOIN 
           categorias c ON p.categoria_id = c.id 
        LEFT JOIN 
-          ratings r ON r.publicacion_id = p.id AND r.usuario_id = $1  -- Verificamos si el usuario ha votado
+          ratings r ON r.publicacion_id = p.id AND r.usuario_id = $1  
        WHERE 
           co.usuario_id = $1`,
       [userId]
     );
 
+    console.log("Compras resultantes:", result.rows); // Verificamos los datos obtenidos
     res.json({ compras: result.rows });
   } catch (error) {
     console.error('Error al obtener las compras del usuario:', error);
     res.status(500).json({ error: 'Error al obtener las compras del usuario' });
   }
 });
+
 
 
 // Ruta para enviar un rating
@@ -265,6 +267,29 @@ app.post('/api/ratings', authenticateToken, async (req, res) => {
   }
 });
 
+// Ruta para validar si un usuario ya ha votado en una publicación
+app.get('/api/ratings/validate', authenticateToken, async (req, res) => {
+  const { publicacion_id } = req.query;  // Suponemos que el ID de la publicación se pasa como query parameter
+  const usuario_id = req.user.id;
+
+  try {
+    const result = await app.locals.db.query(
+      `SELECT rating FROM ratings WHERE usuario_id = $1 AND publicacion_id = $2`,
+      [usuario_id, publicacion_id]
+    );
+
+    if (result.rowCount > 0) {
+      // Si el usuario ya ha votado, devolvemos el rating
+      res.json({ hasVoted: true, userRating: result.rows[0].rating });
+    } else {
+      // Si no ha votado, indicamos que no ha votado
+      res.json({ hasVoted: false });
+    }
+  } catch (error) {
+    console.error('Error al validar el rating:', error);
+    res.status(500).json({ error: 'Error al validar el rating.' });
+  }
+});
 
 
 
