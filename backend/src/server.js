@@ -291,7 +291,10 @@ app.get('/api/ratings/validate', authenticateToken, async (req, res) => {
   }
 });
 
-
+  //ruta para verificar render
+  app.get('/', (req, res) => {
+    res.send('Esta viva la API');
+});
 
   // Iniciar el servidor después de configurar la base de datos
   app.listen(port, () => {
